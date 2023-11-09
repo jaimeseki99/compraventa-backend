@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import net.ausiasmarch.compraventa.entity.ProductoEntity;
-import net.ausiasmarch.compraventa.exception.InssuficientStockException;
 import net.ausiasmarch.compraventa.exception.ResourceNotFoundException;
 import net.ausiasmarch.compraventa.repository.ProductoRepository;
 

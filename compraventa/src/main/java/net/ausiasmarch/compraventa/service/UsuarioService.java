@@ -82,24 +82,25 @@ public class UsuarioService {
         oUsuarioRepository.resetAutoIncrement();
         UsuarioEntity oUsuarioEntity1 = new UsuarioEntity(1L, "Jaime", "Serrano", "jaimeseki99", "jaime99sq@gmail.com", "C/La Senyera, 24", "601148404", 1000000.00, "2868b648dcccb43788cc6c29df16bf3c899151d035892c3988b53fefbede53f7", false);
         oUsuarioRepository.save(oUsuarioEntity1);
-        oUsuarioEntity1 = new UsuarioEntity(1L, "Joan", "Serrano", "joaseki", "joaserqu93@hotmail.com", "C/ La Plata, 54", "693797773", 1000000.00, "2868b648dcccb43788cc6c29df16bf3c899151d035892c3988b53fefbede53f7",true);
+        oUsuarioEntity1 = new UsuarioEntity(2L, "Joan", "Serrano", "joaseki", "joaserqu93@hotmail.com", "C/ La Plata, 54", "693797773", 1000000.00, "2868b648dcccb43788cc6c29df16bf3c899151d035892c3988b53fefbede53f7",true);
         oUsuarioRepository.save(oUsuarioEntity1);
         return oUsuarioRepository.count();
     }
 
     @Transactional
-    public void actualizarSaldoUsuario(UsuarioEntity oUsuarioEntity, double saldo) {
+    public void actualizarSaldoUsuario(UsuarioEntity oUsuarioEntity, double costeTotal) {
         UsuarioEntity usuarioEncontrado = oUsuarioRepository.findById(oUsuarioEntity.getId()).orElse(null);
 
-        if (usuarioEncontrado != null) {
-            double saldoActual = usuarioEncontrado.getSaldo();
-            double nuevoSaldo = saldoActual - saldo;
+                if (usuarioEncontrado != null) {
+                    double saldoActual = usuarioEncontrado.getSaldo();
+                    double nuevoSaldo = saldoActual - costeTotal;
 
-            if (nuevoSaldo >= 0) {
-                usuarioEncontrado.setSaldo(nuevoSaldo);
-                oUsuarioRepository.save(usuarioEncontrado);
+                    if (nuevoSaldo >= 0) {
+                        usuarioEncontrado.setSaldo(nuevoSaldo);
+                        oUsuarioRepository.save(usuarioEncontrado);
+                    }
+                } else {
+                    throw new ResourceNotFoundException("Usuario no encontrado");
+                }
             }
-        }
-    }
-    
 }

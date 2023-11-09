@@ -49,7 +49,7 @@ public class CompraApi {
     @GetMapping("")
     public ResponseEntity<Page<CompraEntity>> getPage(Pageable pageable, @RequestParam(value = "usuario", defaultValue = "0", required = false) Long id_usuario,
             @RequestParam(value = "producto", defaultValue = "0", required = false) Long id_producto) {
-        return ResponseEntity.ok(oCompraService.getPage(id_usuario, id_producto, pageable));
+        return ResponseEntity.ok(oCompraService.getPage(pageable, id_usuario, id_producto));
     }
 
     @PostMapping("/populate/{amount}")

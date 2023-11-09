@@ -24,7 +24,7 @@ public class CompraEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "El número de unidades compradas del producto no puede estar vacío")
+    @NotNull
     @Min(value = 1, message = "Debes comprar al menos una unidad para efectuar la compra")
     private int cantidad;
 
@@ -33,14 +33,12 @@ public class CompraEntity {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date fecha;
 
-    @NotNull
-    @NotBlank(message = "Debes especificar el usuario que realiza la compra")
+    @NotNull(message = "El usuario que realiza la compra no puede estar vacío")
     @ManyToOne
     @JoinColumn(name = "id_usuario")
     private UsuarioEntity usuario;
 
-    @NotNull
-    @NotBlank(message = "Debes especificar el producto que deseas comprar")
+    @NotNull(message = "El producto comprado no puede estar vacío")
     @ManyToOne
     @JoinColumn(name = "id_producto")
     private ProductoEntity producto;

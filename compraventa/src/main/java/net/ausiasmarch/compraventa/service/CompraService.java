@@ -2,6 +2,7 @@ package net.ausiasmarch.compraventa.service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,9 @@ public class CompraService {
     UsuarioRepository oUsuarioRepository;
 
     @Autowired
+    ProductoRepository oProductoRepository;
+
+    @Autowired
     SesionService oSesionService;
 
     public CompraEntity get(Long id) {
@@ -40,23 +44,22 @@ public class CompraService {
     }
 
     public Long create(CompraEntity oCompraEntity) {
-        // oSesionService.onlyAdminsOrUsers();
+
+        oSesionService.onlyAdminsOrUsers();
         oCompraEntity.setId(null);
-        oCompraEntity.setFecha(new Date(System.currentTimeMillis()));
+        int cantidadComprada = oCompraEntity.getCantidad();
         ProductoEntity productoComprado = oCompraEntity.getProducto();
+        double precio = productoComprado.getPrecio();
+        double costeTotal = cantidadComprada * precio;
+        oCompraEntity.setCoste(costeTotal);
+        oCompraEntity.setFecha(new Date(System.currentTimeMillis()));
         UsuarioEntity usuarioCompra = oCompraEntity.getUsuario();
-        
-        if(productoComprado!=null && usuarioCompra!=null) {
-            int cantidadComprada = oCompraEntity.getCantidad();
-            double precio = productoComprado.getPrecio();
-            double costeTotal = cantidadComprada * precio;
-            oCompraEntity.setCoste(costeTotal);
-            oUsuarioService.actualizarSaldoUsuario(usuarioCompra, costeTotal);
-            oProductoService.actualizarStock(productoComprado, cantidadComprada);
-        }
+
+        oUsuarioService.actualizarSaldoUsuario(usuarioCompra, costeTotal);
+        oProductoService.actualizarStock(productoComprado, cantidadComprada);
+
  
         return oCompraRepository.save(oCompraEntity).getId();
-        
     }
 
     public CompraEntity update(CompraEntity oCompraEntity) {
@@ -77,7 +80,9 @@ public class CompraService {
 
         if (oCompraCancelada != null) {
             int cantidadVendida = oCompraCancelada.getCantidad();
+            double costeCompra = oCompraCancelada.getCoste();
             ProductoEntity productoVendido = oCompraCancelada.getProducto();
+            UsuarioEntity usuarioCompra = oCompraCancelada.getUsuario();
 
             if (productoVendido != null) {
                 int stockActual = productoVendido.getStock();
@@ -86,15 +91,27 @@ public class CompraService {
                 oProductoService.update(productoVendido);
             }
 
-           oCompraRepository.deleteById(id);
+            oUsuarioService.actualizarSaldoUsuario(usuarioCompra, -costeCompra);
+
+            oCompraRepository.deleteById(id);
         }
 
         return id;
     }
 
-    public Page<CompraEntity> getPage(Pageable oPageable) {
-       return oCompraRepository.findAll(oPageable);
+    public Page<CompraEntity> getPage(Pageable oPageable, Long id_usuario, Long id_producto) {
+        oSesionService.onlyAdminsOrUsers();
+    if (id_usuario!= 0 && id_producto != 0) {
+        return oCompraRepository.findByUsuarioIdAndProductoId(id_usuario, id_producto, oPageable);
+    } else if (id_usuario != 0) {
+        return oCompraRepository.findByUsuarioId(id_usuario, oPageable);
+    } else if (id_producto != 0) {
+        return oCompraRepository.findByProductoId(id_producto, oPageable);
+    } else {
+        return oCompraRepository.findAll(oPageable);
     }
+}
+
 
     public Long populate(Integer amount) {
         oSesionService.onlyAdmins();
