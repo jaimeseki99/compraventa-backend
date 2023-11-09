@@ -45,21 +45,20 @@ public class CompraService {
 
     public Long create(CompraEntity oCompraEntity) {
 
-        oSesionService.onlyAdminsOrUsers();
+        // oSesionService.onlyAdminsOrUsers();
         oCompraEntity.setId(null);
         int cantidadComprada = oCompraEntity.getCantidad();
-        ProductoEntity productoComprado = oCompraEntity.getProducto();
+        ProductoEntity productoComprado = oProductoService.get(oCompraEntity.getProducto().getId());
         double precio = productoComprado.getPrecio();
         double costeTotal = cantidadComprada * precio;
-        oCompraEntity.setCoste(costeTotal);
-        oCompraEntity.setFecha(new Date(System.currentTimeMillis()));
         UsuarioEntity usuarioCompra = oCompraEntity.getUsuario();
 
         oUsuarioService.actualizarSaldoUsuario(usuarioCompra, costeTotal);
         oProductoService.actualizarStock(productoComprado, cantidadComprada);
 
+        CompraEntity oCompraEntityCreada = new CompraEntity(cantidadComprada, costeTotal, new Date(System.currentTimeMillis()), usuarioCompra, productoComprado);
  
-        return oCompraRepository.save(oCompraEntity).getId();
+        return oCompraRepository.save(oCompraEntityCreada).getId();
     }
 
     public CompraEntity update(CompraEntity oCompraEntity) {
