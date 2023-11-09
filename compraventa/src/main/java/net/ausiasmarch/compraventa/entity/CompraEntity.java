@@ -115,4 +115,6 @@ public class CompraEntity {
         this.usuario = usuario;
         this.producto = producto;
     }
+
+    
 }

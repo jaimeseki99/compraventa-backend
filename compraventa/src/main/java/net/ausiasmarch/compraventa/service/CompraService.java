@@ -39,6 +39,7 @@ public class CompraService {
     @Autowired
     SesionService oSesionService;
 
+
     public CompraEntity get(Long id) {
         return oCompraRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Compra no encontrada"));
     }
@@ -50,13 +51,11 @@ public class CompraService {
         int cantidadComprada = oCompraEntity.getCantidad();
         ProductoEntity productoComprado = oProductoService.get(oCompraEntity.getProducto().getId());
         double precio = productoComprado.getPrecio();
-        double costeTotal = cantidadComprada * precio;
-        UsuarioEntity usuarioCompra = oCompraEntity.getUsuario();
-
-        oUsuarioService.actualizarSaldoUsuario(usuarioCompra, costeTotal);
+        UsuarioEntity usuarioCompra = oUsuarioService.get(oCompraEntity.getUsuario().getId());        
+        oUsuarioService.actualizarSaldoUsuario(usuarioCompra, cantidadComprada * precio);
         oProductoService.actualizarStock(productoComprado, cantidadComprada);
 
-        CompraEntity oCompraEntityCreada = new CompraEntity(cantidadComprada, costeTotal, new Date(System.currentTimeMillis()), usuarioCompra, productoComprado);
+        CompraEntity oCompraEntityCreada = new CompraEntity(cantidadComprada, cantidadComprada * precio, new Date(System.currentTimeMillis()), usuarioCompra, productoComprado);
  
         return oCompraRepository.save(oCompraEntityCreada).getId();
     }
