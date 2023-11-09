@@ -10,11 +10,6 @@ import net.ausiasmarch.compraventa.entity.CompraEntity;
 
 public interface CompraRepository extends JpaRepository<CompraEntity, Long>{
 
-    Page<CompraEntity> findByUsuarioId(Long id, Pageable pageable);
-
-    Page<CompraEntity> findByProductoId(Long id, Pageable pageable);
-
-    Page<CompraEntity> findByUsuarioYProducto(Long id, Long id2, Pageable pageable);
 
     @Modifying
     @Query(value = "ALTER TABLE compra AUTO_INCREMENT = 1", nativeQuery = true)

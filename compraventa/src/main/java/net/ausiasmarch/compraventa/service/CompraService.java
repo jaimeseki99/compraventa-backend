@@ -40,7 +40,7 @@ public class CompraService {
     }
 
     public Long create(CompraEntity oCompraEntity) {
-        oSesionService.onlyAdminsOrUsers();
+        // oSesionService.onlyAdminsOrUsers();
         oCompraEntity.setId(null);
         oCompraEntity.setFecha(new Date(System.currentTimeMillis()));
         ProductoEntity productoComprado = oCompraEntity.getProducto();
@@ -92,16 +92,8 @@ public class CompraService {
         return id;
     }
 
-    public Page<CompraEntity> getPage(Long id_usuario, Long id_producto, Pageable oPageable) {
-        if (id_usuario != 0 && id_producto != 0) {
-            return oCompraRepository.findByUsuarioYProducto(id_usuario, id_producto, oPageable);
-        } else if (id_usuario != 0) {
-            return oCompraRepository.findByUsuarioId(id_usuario, oPageable);
-        } else if (id_producto != 0) {
-            return oCompraRepository.findByProductoId(id_producto, oPageable);
-        } else {
-            return oCompraRepository.findAll(oPageable);
-        }
+    public Page<CompraEntity> getPage(Pageable oPageable) {
+       return oCompraRepository.findAll(oPageable);
     }
 
     public Long populate(Integer amount) {
